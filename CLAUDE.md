@@ -4,13 +4,41 @@
 
 ## プロジェクト概要
 
-家計簿アプリ（kaskeibo-app2）。収入・支出を記録し、集計・可視化するためのアプリケーション。
+レシート読み込み家計簿 Web アプリ（kaskeibo-app2）。レシート画像を Claude API で読み取り、商品名・金額・日付・カテゴリを記録して集計・グラフ表示する。
 
-> 技術スタック・ディレクトリ構成・ビルド/テストコマンドは、実装が進み次第このファイルに追記すること。
+### 技術スタック
+
+- npm workspaces のモノレポ（`backend/` と `frontend/`）
+- フロントエンド: React + Vite + Chart.js（react-chartjs-2）。開発時は Vite が `/api` をバックエンド（:3001）へプロキシする
+- バックエンド: Node.js + Express（ESM）。`@anthropic-ai/sdk` で Claude API を呼ぶ。モデルは `claude-haiku-4-5`
+- データ保存: ブラウザのローカルストレージのみ（サーバー側 DB なし）
+
+### 主要ファイル
+
+- `backend/src/server.js` — `POST /api/analyze-receipt`（multer で画像を受け取る）
+- `backend/src/claudeClient.js` — Claude 呼び出し。`messages.parse` + Zod スキーマで構造化出力を受け取る
+- `backend/src/categories.js` / `frontend/src/constants/categories.js` — カテゴリ定義。**変更時は両方を揃える**
+- `frontend/src/hooks/useReceipts.js` — レシート一覧の状態とローカルストレージ保存
+- `frontend/src/utils/aggregate.js` — カテゴリ別・月別の集計
+
+### コマンド
+
+```bash
+npm install          # 全ワークスペースの依存関係をインストール
+npm run dev          # バックエンド + フロントエンドを同時起動（http://localhost:5173）
+npm run build        # フロントエンドの本番ビルド
+```
+
+テストフレームワークは未導入。追加したらここに実行方法を書くこと。
+
+### セキュリティ
+
+- Claude API キーは `backend/.env` の `ANTHROPIC_API_KEY` にのみ置き、ブラウザ側には渡さない。
+- 環境変数を追加したら `backend/.env.example` も更新する。
 
 ## 開発の基本方針
 
-- 応答・コメント・コミットメッセージは日本語で書く。
+- 応答・コード内コメント・コミットメッセージは日本語で書く。
 - 既存コードの書き方（命名・コメント密度・構成）に合わせる。
 - 金額は浮動小数点誤差を避けるため、整数（円単位）で扱う。
 - APIキーやパスワードなどの秘密情報はコミットしない（`.env` は `.gitignore` に入れる）。
