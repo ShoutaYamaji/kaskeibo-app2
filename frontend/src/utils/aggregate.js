@@ -1,10 +1,15 @@
 import { CATEGORIES } from "../constants/categories.js";
 
-// 金額を「¥1,234」形式で表示する
-export const formatYen = (amount) => `¥${amount.toLocaleString("ja-JP")}`;
+// 金額を「¥1,234」形式で表示する（負の値は「-¥20」）
+export const formatYen = (amount) =>
+  `${amount < 0 ? "-" : ""}¥${Math.abs(amount).toLocaleString("ja-JP")}`;
 
 // レシートの日付から「YYYY-MM」を取り出す
 export const toMonth = (date) => date.slice(0, 7);
+
+// レシートの合計金額（商品金額の合計）
+export const receiptTotal = (receipt) =>
+  receipt.items.reduce((sum, item) => sum + item.price, 0);
 
 /**
  * カテゴリ別の合計金額を求める（商品ごとのカテゴリで集計）
@@ -30,8 +35,7 @@ export function sumByMonth(receipts) {
   const totals = {};
   for (const receipt of receipts) {
     const month = toMonth(receipt.date);
-    const amount = receipt.items.reduce((sum, item) => sum + item.price, 0);
-    totals[month] = (totals[month] ?? 0) + amount;
+    totals[month] = (totals[month] ?? 0) + receiptTotal(receipt);
   }
   return Object.keys(totals)
     .sort()

@@ -20,6 +20,7 @@
 - `backend/src/categories.js` / `frontend/src/constants/categories.js` — カテゴリ定義。**変更時は両方を揃える**
 - `frontend/src/hooks/useReceipts.js` — レシート一覧の状態とローカルストレージ保存
 - `frontend/src/utils/aggregate.js` — カテゴリ別・月別の集計
+- `frontend/src/utils/receiptValidation.js` — 登録前の検証（負の金額・同一日時と合計金額の重複）。警告が出たらユーザーの確認後に登録する
 
 ### コマンド
 

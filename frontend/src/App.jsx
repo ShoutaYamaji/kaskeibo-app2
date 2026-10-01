@@ -14,7 +14,7 @@ export default function App() {
         <p>レシートの写真を読み込むと、商品と金額を自動で記録・集計します。</p>
       </header>
       <main>
-        <ReceiptUploader onAdd={addReceipt} />
+        <ReceiptUploader receipts={receipts} onAdd={addReceipt} />
         <div className="charts">
           <CategoryPieChart receipts={receipts} />
           <MonthlyBarChart receipts={receipts} />

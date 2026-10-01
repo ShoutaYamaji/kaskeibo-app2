@@ -13,6 +13,7 @@ const client = new Anthropic();
 const ReceiptSchema = z.object({
   storeName: z.string().describe("店名。読み取れない場合は空文字"),
   date: z.string().describe("購入日（YYYY-MM-DD 形式）。読み取れない場合は空文字"),
+  time: z.string().describe("購入時刻（HH:MM 形式・24時間表記）。読み取れない場合は空文字"),
   items: z.array(
     z.object({
       name: z.string().describe("商品名"),
@@ -31,7 +32,8 @@ const PROMPT = `このレシート画像から購入内容を読み取ってく�
 - 小計・合計・税額・お預かり・お釣りなどの行は items に含めないでください。
 - カテゴリは次から選んでください: ${CATEGORIES.join("、")}
   - スーパー等で買った食材・飲料・お菓子は「食費」、飲食店での食事は「外食」です。
-- 日付は YYYY-MM-DD 形式にしてください。和暦は西暦に変換してください。`;
+- 日付は YYYY-MM-DD 形式にしてください。和暦は西暦に変換してください。
+- 時刻は HH:MM 形式（24時間表記）にしてください。`;
 
 /**
  * レシート画像を Claude に送り、構造化されたレシート情報を返す
